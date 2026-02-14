@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Valentine Surprise</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #ff758c, #ff7eb3);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .page {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        display: none;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        padding: 20px;
+        text-align: center;
+        color: white;
+    }
+
+    .active {
+        display: flex;
+    }
+
+    .card {
+        background: rgba(255, 255, 255, 0.15);
+        padding: 25px;
+        border-radius: 20px;
+        backdrop-filter: blur(10px);
+        max-width: 420px;
+        width: 100%;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    h1 {
+        margin-bottom: 15px;
+    }
+
+    input {
+        width: 100%;
+        padding: 12px;
+        margin: 10px 0;
+        border-radius: 10px;
+        border: none;
+        outline: none;
+    }
+
+    button {
+        margin-top: 10px;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 12px;
+        background: white;
+        color: #ff4b6e;
+        font-weight: bold;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        transform: scale(1.05);
+    }
+
+    .nav-buttons {
+        margin-top: 20px;
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: -1;
+    }
+
+    img {
+        width: 180px;
+        margin: 15px 0;
+    }
+
+    @media (max-width: 768px) {
+        img {
+            width: 140px;
+        }
+
+        .card {
+            padding: 20px;
+        }
+    }
+</style>
+</head>
+
+<body>
+
+<canvas id="petals"></canvas>
+
+<div class="page active" id="loginPage">
+    <div class="card">
+        <h1>HII BABYY!! </h1>
+        <p>Log in ka po muna hehe </p>
+        <input id="username" type="text" placeholder="Kiss Muna">
+        <input id="password" type="password" placeholder="Clue: It's a yes! ">
+        <button onclick="login()">Enter</button>
+        <p id="error" style="margin-top:10px;color:yellow;"></p>
+    </div>
+</div>
+
+<div class="page" id="messagePage">
+    <div class="card">
+        <h1>Happy Valentine’s Day Babyyy!!</h1>
+        <p>
+            Hii Babyy Happy Valentiness ulitt hehee.<br>
+            Sorry if wala us date ngayong valentines poo and I feel bad din kasi 
+			I wanted to make this special for you rin knowing na once a year lang ito. Pero don't worry I will make bawi sayo po hehe.
+			I just want to say din na I LOVE YOU SO MUCH and thank you for making me feel loved and valued araw araw <br><br>
+            Here's to more sweet moments, valentines and years with youu, I LOVE YOUU SO MUCHIEE!! ❤️
+        </p>
+
+        <div class="nav-buttons">
+            <button onclick="goTo('loginPage')">Home</button>
+            <button onclick="goTo('flowersPage')">Next</button>
+        </div>
+    </div>
+</div>
+
+<div class="page" id="flowersPage">
+    <div class="card">
+        <h1>Flowers for My Prettiest Girl 🌷</h1>
+        <img src="tulip.png" alt="Flowers">
+        <p>Happy Valentiness Babyy!! I LOVE YOU SOO MUCHH </p>
+
+        <div class="nav-buttons">
+            <button onclick="goTo('messagePage')">Previous</button>
+            <button onclick="goTo('loginPage')">Home</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const VALID_USERNAME = "MWA MWA";
+    const VALID_PASSWORD = "06202025";
+
+    function goTo(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.getElementById(pageId).classList.add('active');
+    }
+
+    function login() {
+        const user = document.getElementById("username").value.trim();
+        const pass = document.getElementById("password").value.trim();
+        const error = document.getElementById("error");
+
+        if (user === VALID_USERNAME && pass === VALID_PASSWORD) {
+            error.textContent = "";
+            goTo('messagePage');
+        } else {
+            error.textContent = "Ouch, sige okay lang malayo sa lungs... 💔";
+        }
+    }
+
+    const canvas = document.getElementById("petals");
+    const ctx = canvas.getContext("2d");
+
+    function resize() {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+
+    window.addEventListener("resize", resize);
+    resize();
+
+    const petals = Array.from({ length: 40 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        r: Math.random() * 6 + 4,
+        d: Math.random() * 1 + 0.5
+    }));
+
+    function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        ctx.beginPath();
+
+        petals.forEach(p => {
+            ctx.moveTo(p.x, p.y);
+            ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        });
+
+        ctx.fill();
+        update();
+    }
+
+    function update() {
+        petals.forEach(p => {
+            p.y += p.d;
+            p.x += Math.sin(p.y * 0.01);
+
+            if (p.y > canvas.height) {
+                p.y = -10;
+                p.x = Math.random() * canvas.width;
+            }
+        });
+    }
+
+    setInterval(draw, 30);
+</script>
+
+</body>
+</html>
